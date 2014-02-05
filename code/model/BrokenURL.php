@@ -2,8 +2,8 @@
 
 class BrokenURL extends DataObject {
 	private static $db = array(
-		'URL' => 'Varchar',
-		'Script' => 'Varchar',
+		'URL' => 'Varchar(255)',
+		'Script' => 'Varchar(255)',
 		'Module' => 'Varchar',
 		'HTTPCode' => 'Int'
 	);
