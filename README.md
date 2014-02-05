@@ -1,4 +1,4 @@
-# Check source Code links
+# Check Source Code links
 
 ## Introduction
 
@@ -39,6 +39,9 @@ The list it returns can not be guaranteed but it gives a good indication of brok
 
 Run the following task *http://path.to.silverstripe/BrokenScriptsURLS?module=framework* to check your site for 
 broken source code links.
+To ignore certain directories add the param excludeDir=/directory/to/exclude as per the example below
+
+*http://localhost/brokenURLs/dev/tasks/BrokenScriptsURLS?module=framework&excludeDir=framework/docs/en/changelogs*
 
 ## Disable the Broken external link menu
 

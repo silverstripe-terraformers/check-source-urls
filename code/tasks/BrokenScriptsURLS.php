@@ -1,9 +1,9 @@
 <?php
 
 class BrokenScriptsURLS extends BuildTask {
-	protected $title = 'Search CMS/Framework files for URL that are broken';
+	protected $title = 'Search module scripts and templates for URLs that are broken';
 
-	protected $description = 'A task that records external broken links in the comments of scripts';
+	protected $description = 'A task that records external broken links in the source code of scripts and templates';
 
 	protected $enabled = true;
 
@@ -13,6 +13,8 @@ class BrokenScriptsURLS extends BuildTask {
 
 	function run($request) {
 		$module = ($request->getVar('module')) ? $request->getVar('module') : 'cms';
+		// some folders we may want to ignore like changelogs in the framework module
+		$excludeDir = ($request->getVar('excludeDir')) ? $request->getVar('excludeDir') : '';
 		$folder = BASE_PATH . DIRECTORY_SEPARATOR . $module;
 		if (!file_exists($folder)) {
 			return;
@@ -25,34 +27,40 @@ class BrokenScriptsURLS extends BuildTask {
 		$scripts = array();
 		foreach ($iter as $path => $dir) {
 			if (!$dir->isDir() && in_array(pathinfo($path, PATHINFO_EXTENSION), $this->checkExtensions)) {
-				$scripts[] = $path;
+				if (empty($excludeDir) ||
+					strpos(pathinfo($path, PATHINFO_DIRNAME), $excludeDir) == FALSE) {
+					$scripts[] = $path;
+				}
 			}
 		}
 		$tlds = '';
+		// TODO: Will need to add support for Punycode URLs at some point
 		$tldObj = TopLevelDomain::get()
 			->filter(array('Enabled' => 1, 'Punycode' => 0));
 		foreach ($tldObj as $tld) {
 			$tlds = (empty($tlds)) ? $tld->TLD : $tlds . '|' . trim($tld->TLD);
 		}
-		$search = "~(\w*\.)+($tlds)/?[\n\r\z]+~i";
+
+		// the tlds are a important part of this regexp mainly so lines without a valid tld
+		// are not matched
+		$search = "~([\.-\w]*)(\.)($tlds)(\?|/)([\?\.a-zA-Z0-9\/=_#&%\~-]*)[\n\r\z]*~i";
 		foreach ($scripts as $script) {
-			echo "<p>Checking script $script</p>";
 			$fileText = file_get_contents($script);
 			preg_match_all($search, $fileText, $matches);
 			$href = false;
 			if (count($matches) > 0) {
 				foreach ($matches[0] as $value) {
-					echo "<p>Checking URL $value</p>";
 					$href = $value;
 					if($href && function_exists('curl_init')) {
 						$handle = curl_init($href);
 						curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 						$response = curl_exec($handle);
 						$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);  
-						echo "<p>HTTP Code $httpCode</p>";
 						curl_close($handle);
 						if (($httpCode < 200 || $httpCode > 302)
 							|| ($href == '' || $href[0] == '/')) {
+							echo "<p>Checking script $script</p>";
+							echo "<p>URL $value returns HTTP Code $httpCode</p>";
 							$brokenLink = BrokenURL::get()
 								->filter(array(
 									'URL' => $href,
