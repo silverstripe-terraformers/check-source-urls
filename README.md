@@ -43,9 +43,14 @@ To ignore certain directories add the param excludeDir=/directory/to/exclude as 
 
 *http://localhost/brokenURLs/dev/tasks/BrokenScriptsURLS?module=framework&excludeDir=framework/docs/en/changelogs*
 
-## Disable the Broken external link menu
+## Skipping Domains ##
 
-To disable the *Broken Ext. Links* menu add the following code to mysite/_config.php
+By default certain domains are skipped like example.com and mysite.com to see or edit the full list view the
+skipDomains property of the BrokenScriptsURL class in code/tasks/BrokenScriptsURLS.php
+
+## Disable the Broken URL model admin
+
+To disable the *Broken URLs* menu add the following code to mysite/_config.php
 
 `CMSMenu::remove_menu_item('BrokenURLModelAdmin');`
 
