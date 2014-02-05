@@ -11,7 +11,25 @@ class BrokenScriptsURLS extends BuildTask {
 		'php', 'md', 'js', 'ss'
 	);
 
+	// list of fairly generic domains used as examples
+	protected $skipDomains = array(
+		'my-host.com',
+		'myhost.com',
+		'mysite.com',
+		'test.com',
+		'example.com',
+		'example.org',
+		'mydomain',
+		'website.com',
+		'playboy.com'
+	);
+
 	function run($request) {
+		// no point continuing without curl_init
+		if(!function_exists('curl_init')) {
+			echo '<p>curl_init is not available</p>';
+			return;
+		}
 		$module = ($request->getVar('module')) ? $request->getVar('module') : 'cms';
 		// some folders we may want to ignore like changelogs in the framework module
 		$excludeDir = ($request->getVar('excludeDir')) ? $request->getVar('excludeDir') : '';
@@ -41,6 +59,13 @@ class BrokenScriptsURLS extends BuildTask {
 			$tlds = (empty($tlds)) ? $tld->TLD : $tlds . '|' . trim($tld->TLD);
 		}
 
+		// create a RegExp for domains we want to ignore
+		$ignoreDomainRegExp = '';
+		foreach ($this->skipDomains as $domain) {
+			$ignoreDomainRegExp = (empty($ignoreDomainRegExp)) ? $domain 
+				: $ignoreDomainRegExp . '|' . $domain;
+		}
+
 		// the tlds are a important part of this regexp mainly so lines without a valid tld
 		// are not matched
 		$search = "~([\.-\w]*)(\.)($tlds)(\?|/)([\?\.a-zA-Z0-9\/=_#&%\~-]*)[\n\r\z]*~i";
@@ -50,8 +75,9 @@ class BrokenScriptsURLS extends BuildTask {
 			$href = false;
 			if (count($matches) > 0) {
 				foreach ($matches[0] as $value) {
-					$href = $value;
-					if($href && function_exists('curl_init')) {
+					// set href to null for domains we want to skip
+					$href =  preg_match("~($ignoreDomainRegExp)~i", $value) ? null : $value;
+					if($href) {
 						$handle = curl_init($href);
 						curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
 						$response = curl_exec($handle);

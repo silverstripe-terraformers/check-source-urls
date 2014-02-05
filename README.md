@@ -54,5 +54,3 @@ To disable the *Broken Ext. Links* menu add the following code to mysite/_config
 Add support for Punycode top level domains.
 
 Add multi language support
-
-Add list of domains to ignore like example.com and mysite.com
