@@ -11,7 +11,8 @@ class BrokenURL extends DataObject {
 	private static $summary_fields = array(
 		'URL' => 'URL',
 		'Script' => 'Script',
-		'Module' => 'Module'
+		'Module' => 'Module',
+		'HTTPCode' => 'HTTP Error Code'
 	);
 }
 
