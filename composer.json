@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/check-source-urls",
+	"name": "kmayo-ss/check-source-urls",
 	"description": "Adds a task to find broken links in module source code, as well as a model admin for the results",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "broken links", "href", "source code"],
