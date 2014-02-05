@@ -1,0 +1,17 @@
+{
+	"name": "silverstripe/check-source-urls",
+	"description": "Adds a task to find broken links in module source code, as well as a model admin for the results",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "broken links", "href", "source code"],
+	"authors": [
+		{
+			"name": "Kirk Mayo",
+			"email": "kirk@silverstripe.com"
+		}
+	],
+	"require":
+	{
+		"silverstripe/framework": ">=3.0",
+		"silverstripe/cms": ">=3.0"
+	}
+}
