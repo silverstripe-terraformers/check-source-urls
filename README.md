@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The check source URLs module is to review the source code for a module and try to find any broken lins.
+The check source URLs module is to review the source code in a module or a directory to find any broken links.
 When the module is first installed it obtains a list of top level domains from
 *http://data.iana.org/TLD/tlds-alpha-by-domain.txt* 
 To review a module a dev task has been created which can be run to check urls in the source code of
